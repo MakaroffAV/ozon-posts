@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  db:
+    image:
+      postgres
+    ports:
+      - "8081:5432"
+    environment:
+      - POSTGRES_DB=ozon
+      - POSTGRES_USER=makarov
+      - POSTGRES_PASSWORD=simplePassword
+    container_name:
+      ozon-posts-db

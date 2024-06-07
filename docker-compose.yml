@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "9354:8080"
+    networks:
+      - ozon-posts-network
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      STORAGE_TYPE: db
+      DB_CONN_PARAMS: user=makarov password=simplePassword host=ozon-posts-db port=5432 dbname=ozon sslmode=disable
+    container_name:
+      ozon-posts-app
+  
+  database:
+    image:
+      postgres
+    ports:
+      - "9355:5432"
+    networks:
+      - ozon-posts-network
+    healthcheck:
+      test:     ["CMD-SHELL", "pg_isready", "-d", "ozon-posts-db"]
+      interval: 5s
+      timeout:  2s
+      retries:  5
+    environment:
+      - POSTGRES_DB=ozon
+      - POSTGRES_USER=makarov
+      - POSTGRES_PASSWORD=simplePassword
+    container_name:
+      ozon-posts-db
+
+networks:
+  ozon-posts-network:
+    driver: bridge
